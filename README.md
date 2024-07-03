@@ -22,7 +22,7 @@ mu_g: vector of global embedding mean (D,)
 
 
 ## Usage
-```
+```python
 import nc_toolbox as nctb
 import numpy as np
 
