@@ -4,7 +4,7 @@ A Python library to calculate Neural Collapse (NC) related metrics.
 
 
 ## Install
-`pip install 'nc-toolbox @ git+https://github.com/felixsh/nc-toolbox'
+`pip install 'nc-toolbox @ git+https://github.com/felixsh/nc-toolbox'`
 
 
 ## Notation
