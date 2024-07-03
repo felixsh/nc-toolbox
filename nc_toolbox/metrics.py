@@ -1,6 +1,6 @@
 import numpy as np
 
-from util import triu, cov, ncc_classify
+from nc_toolbox.util import triu, cov, ncc_classify
 
 
 def nc1_strong():
