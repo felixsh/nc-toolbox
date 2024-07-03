@@ -1,17 +1,3 @@
-"""
-N: number of samples
-Nc: number of samples in class c
-D: feature dimensionality
-C: number of classes
-
-W: weight matrix of linear classifier (C, D)
-H: feature matrix (N, D)
-L: label vector (N,)
-
-mu_c: matrix of class embedding means (C, D)
-mu_g: vector of global embedding mean (D,)
-"""
-
 from .statistic import class_embedding_means, class_embedding_variances
 from .statistic import global_embedding_mean
 
