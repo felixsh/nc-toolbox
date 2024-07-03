@@ -42,7 +42,7 @@ var_c = nctb.class_embedding_variances(H, L, mu_c)
 mu_g = nctb.global_embedding_mean(H)
 
 # Metrics
-print(f'nc1_cdnv: {nctb.nc1_cdnv(mu_c, mu_g)}')
+print(f'nc1_cdnv: {nctb.nc1_cdnv(mu_c, var_c)}')
 
 print(f'nc2_equinormness: {nctb.nc2_equinormness(mu_c, mu_g)}')
 print(f'nc2_equiangularity: {nctb.nc2_equiangularity(mu_c, mu_g)}')
