@@ -2,6 +2,8 @@
 
 A Python library to calculate Neural Collapse (NC) related metrics.
 
+So far, the metrics as described in "Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024" are implemented.
+
 
 ## Install
 `pip install 'nc-toolbox @ git+https://github.com/felixsh/nc-toolbox'`
