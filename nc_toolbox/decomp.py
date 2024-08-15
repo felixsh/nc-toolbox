@@ -1,7 +1,6 @@
+import dask.array as da
 import numpy as np
-from scipy.linalg import svd
 from sklearn.decomposition import PCA
-from sklearn.utils.extmath import svd_flip
 
 
 def principal_decomp(X, n_components=None, center=False):
@@ -14,10 +13,10 @@ def principal_decomp(X, n_components=None, center=False):
     if center:
         column_mean = np.mean(X, axis=0)
         X = X - column_mean
-
-    _, _, Vt = svd(X, full_matrices=True)
-    _, Vt = svd_flip(None, Vt, u_based_decision=False)
-    components = Vt
+    
+    X_dask = da.from_array(X, chunks=(10_000, n_features))
+    _, _, Vt = da.linalg.svd(X_dask, coerce_signs=True)
+    components = Vt.compute()
 
     if n_components is None:
         n_components = min(n_samples, n_features) - 1
@@ -35,7 +34,7 @@ def principal_decomp(X, n_components=None, center=False):
 
 if __name__ == '__main__':
     d = 2
-    X = np.random.rand(7, 4)
+    X = np.random.rand(50000, 512)
     P, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
     
     print(f"==>> X.shape:          {X.shape}")
