@@ -3,9 +3,24 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 
-def principal_decomp(X, n_components=None, center=False):
+def svd_flip(v):
+    """Sign correction to ensure deterministic output from SVD.
+
+    Adapted from:
+    https://github.com/scikit-learn/scikit-learn/blob/70fdc843a4b8182d97a3508c1a426acc5e87e980/sklearn/utils/extmath.py#L848
     """
-    Adapted from sklearn.decompositions.PCA()
+    max_abs_v_rows = np.argmax(np.abs(v), axis=1)
+    shift = np.arange(v.shape[0])
+    indices = max_abs_v_rows + shift * v.shape[1]
+    signs = np.sign(np.take(np.reshape(v, (-1,)), indices, axis=0))
+    v *= signs[:, np.newaxis]
+    return v
+
+
+def principal_decomp(X, n_components=None, center=False):
+    """Principle component decomposition with Dask.
+
+    Adapted from sklearn.decompositions.PCA():
     https://github.com/scikit-learn/scikit-learn/blob/70fdc843a4b8182d97a3508c1a426acc5e87e980/sklearn/decomposition/_pca.py
     """
     n_samples, n_features = X.shape
@@ -17,6 +32,7 @@ def principal_decomp(X, n_components=None, center=False):
     X_dask = da.from_array(X, chunks=(10_000, n_features))
     _, _, Vt = da.linalg.svd(X_dask, coerce_signs=True)
     components = Vt.compute()
+    components = svd_flip(components)
 
     if n_components is None:
         n_components = min(n_samples, n_features) - 1
@@ -33,19 +49,41 @@ def principal_decomp(X, n_components=None, center=False):
 
 
 if __name__ == '__main__':
-    d = 2
-    X = np.random.rand(50000, 512)
-    P, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
+    # Basic testing
+
+    d = 10
+    X = np.random.rand(10000, 512)
+    P_dask, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
+    X_dask = P_dask.dot((X - X_mean).T).T
     
     print(f"==>> X.shape:          {X.shape}")
-    print(f"==>> P.shape:          {P.shape}")
+    print(f"==>> P_dask.shape:     {P_dask.shape}")
     print(f"==>> P_residual.shape: {P_residual.shape}")
-    print(np.allclose(P.dot(P_residual.T), 0))
+    print()
 
     pca = PCA(n_components=d)
     X_pca = pca.fit_transform(X)
-    X_prj = P.dot((X - X_mean).T).T
+    P_pca = pca.components_
 
-    print(f"==>> X_pca.shape: {X_pca.shape}")
-    print(f"==>> X_prj.shape: {X_prj.shape}")
-    print(np.allclose(X_pca, X_prj))
+    _, _, Vh = np.linalg.svd(X - X_mean, full_matrices=True)
+    Vh = svd_flip(Vh)
+    P_np = Vh[:d, :]
+    X_np = P_np.dot((X - X_mean).T).T
+
+    print(f"==>> P_dask.shape:     {P_dask.shape}")
+    print(f"==>> P_pca.shape:      {P_pca.shape}")
+    print(f"==>> P_np.shape:       {P_np.shape}")
+    print(np.allclose(P_pca, P_dask))
+    print(np.allclose(P_pca, P_np))
+    print(np.allclose(P_np, P_dask))
+    print(np.allclose(P_dask.dot(P_residual.T), 0))
+    print(np.allclose(P_pca.dot(P_residual.T), 0))
+    print(np.allclose(P_np.dot(P_residual.T), 0))
+    print()
+
+    print(f"==>> X_pca.shape:  {X_pca.shape}")
+    print(f"==>> X_dask.shape: {X_dask.shape}")
+    print(f"==>> X_np.shape:   {X_np.shape}")
+    print(np.allclose(X_pca, X_dask))
+    print(np.allclose(X_pca, X_np))
+    print(np.allclose(X_np, X_dask))
