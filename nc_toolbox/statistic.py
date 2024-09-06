@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import numpy as np
 
 
@@ -33,3 +35,23 @@ def global_embedding_mean(H):
     """Calculate mean of embeddings globally."""
     mu_g = H.mean(axis=0)
     return mu_g
+
+
+def split_embeddings(H, L):
+    """Split class embeddings into arrays per class."""
+    class_labels = np.sort(np.unique(L))
+    H_splitted = OrderedDict()
+    for c in class_labels:
+        idx = L == c
+        H_splitted[c] = H[idx, :]
+    return H_splitted
+
+
+def center_embeddings(H, L, mu_c):
+    """Center embeddings on their respective class mean."""
+    class_labels = np.unique(L)
+    H_centered = np.empty_like(H)
+    for c in class_labels:
+        idx = L == c
+        H_centered[idx, :] = H[idx, :] - mu_c[c, :]
+    return H_centered

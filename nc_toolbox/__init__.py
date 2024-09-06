@@ -1,5 +1,6 @@
 from .statistic import class_embedding_means, class_embedding_variances
 from .statistic import global_embedding_mean
+from .statistic import split_embeddings, center_embeddings
 
 from .metrics import nc1_cdnv
 from .metrics import nc2_equinormness, nc2_equiangularity, gnc2_hypershperical_uniformity
