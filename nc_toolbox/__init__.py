@@ -8,3 +8,5 @@ from .metrics import nc3_self_duality, unc3_uniform_duality
 from .metrics import nc4_classifier_agreement
 
 from .decomp import principal_decomp
+
+from .util import lin_classify, ncc_classify

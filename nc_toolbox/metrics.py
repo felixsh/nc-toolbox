@@ -1,6 +1,6 @@
 import numpy as np
 
-from nc_toolbox.util import triu, cov, ncc_classify
+from nc_toolbox.util import triu, cov, lin_classify, ncc_classify
 
 
 def nc1_strong():
@@ -101,11 +101,11 @@ def unc3_uniform_duality(W, mu_c, mu_g):
     return cov(cossim)
 
 
-def nc4_classifier_agreement(H, W, mu_c):
+def nc4_classifier_agreement(H, W, b, mu_c):
     """
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.7
     """
-    lin_res = np.argmax(H @ W.T, axis=1)
-    ncc_res = np.apply_along_axis(ncc_classify, 1, H, mu_c)
+    lin_res = lin_classify(H, W, b)
+    ncc_res = ncc_classify(H, mu_c)
     agreement = lin_res == ncc_res
     return np.mean(agreement)

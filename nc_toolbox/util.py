@@ -20,10 +20,23 @@ def cov(x):
     return x.std() / x.mean()
 
 
-def ncc_classify(h, mu_c):
+def lin_classify(H, W, b):
     """
-    Nearest Class Center (NCC) classifier
+    Linear classifier
+    """
+    return np.argmax((H @ W.T) + b, axis=1)
+
+
+def _ncc_classify(h, mu_c):
+    """
     h: feature vector (D,)
     """
     dist = np.linalg.norm(mu_c - h, axis=1)
     return np.argmin(dist)
+
+
+def ncc_classify(H, mu_c):
+    """
+    Nearest Class Center (NCC) classifier
+    """
+    return np.apply_along_axis(_ncc_classify, 1, H, mu_c)
