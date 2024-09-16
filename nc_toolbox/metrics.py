@@ -105,7 +105,7 @@ def nc4_classifier_agreement(H, W, mu_c):
     """
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.7
     """
-    lin_res = np.argmin(H @ W.T, axis=1)
+    lin_res = np.argmax(H @ W.T, axis=1)
     ncc_res = np.apply_along_axis(ncc_classify, 1, H, mu_c)
     agreement = lin_res == ncc_res
     return np.mean(agreement)
