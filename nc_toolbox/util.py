@@ -40,3 +40,21 @@ def ncc_classify(H, mu_c):
     Nearest Class Center (NCC) classifier
     """
     return np.apply_along_axis(_ncc_classify, 1, H, mu_c)
+
+
+def testrun_classifiers():
+    n = 1000
+    d = 128
+    c = 10
+    H = np.random.rand(n, d)
+    W = np.random.rand(c, d)
+    b = np.random.rand(c)
+    mu_c = np.random.rand(c, d)
+    lin_res = lin_classify(H, W, b)
+    print(f"==>> lin_res.shape: {lin_res.shape}")
+    ncc_res = ncc_classify(H, mu_c)
+    print(f"==>> ncc_res.shape: {ncc_res.shape}")
+
+
+if __name__ == '__main__':
+    testrun_classifiers()
