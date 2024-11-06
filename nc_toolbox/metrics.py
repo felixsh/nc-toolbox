@@ -16,11 +16,18 @@ def nc1_strong(H, L, mu_c, mu_g):
     return np.trace((sigma_w @ np.linalg.pinv(sigma_b)) / C)
 
 
-def nc1_weak():
+def nc1_weak(H, L, mu_c, mu_g):
     """
-    TODO
+    Calculate normalized class variances
+    Rangamani, Akshay, et al. Feature learning in deep classifiers through intermediate neural collapse, 2023, §4
+    Collapse minimizes within class variance and maximizes between class variance.
     """
-    pass
+    tr_sigma_b = np.trace(between_class_covariance(mu_c, mu_g))
+    tr_sigma_w = np.trace(within_class_covariance(H, L, mu_c))
+    tr_sigma_tot = tr_sigma_b + tr_sigma_w
+    nomalized_between_class_var = tr_sigma_b / tr_sigma_tot
+    nomalized_within_class_var = tr_sigma_w / tr_sigma_tot
+    return nomalized_between_class_var, nomalized_within_class_var
 
 
 def nc1_cdnv(mu_c, var_c):
