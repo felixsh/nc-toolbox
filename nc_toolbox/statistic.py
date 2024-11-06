@@ -55,3 +55,25 @@ def center_embeddings(H, L, mu_c):
         idx = L == c
         H_centered[idx, :] = H[idx, :] - mu_c[c, :]
     return H_centered
+
+
+def between_class_covariance(mu_c, mu_g):
+    """
+    Calculate between class covariance.
+    Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training, 2020, §I
+    """
+    C = mu_c.shape[0]
+    diff = mu_c - mu_g
+    sigma_b = (diff.T @ diff) / C
+    return sigma_b
+
+
+def within_class_covariance(H, L, mu_c):
+    """
+    Calculate within class covariance.
+    Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training, 2020, §I
+    """
+    N = H.shape[0]
+    H_center = center_embeddings(H, L, mu_c)
+    sigma_w = (H_center.T @ H_center) / N
+    return sigma_w
