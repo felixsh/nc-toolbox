@@ -1,14 +1,19 @@
 import numpy as np
 
-from nc_toolbox.util import triu, cov, lin_classify, ncc_classify
+from .util import triu, cov, lin_classify, ncc_classify
+from .statistic import between_class_covariance, within_class_covariance
 
 
-def nc1_strong():
+def nc1_strong(H, L, mu_c, mu_g):
     """
-    TODO
-    Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training. Proceedings of the National Academy of Sciences, 117(40):24652–24663, sep 2020
+    Calculate class-features variance collapse
+    Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training, 2020, Fig. 6
+    Collapse minimizes this metric, goes to zero.
     """
-    pass
+    C = mu_c.shape[0]
+    sigma_b = between_class_covariance(mu_c, mu_g)
+    sigma_w = within_class_covariance(H, L, mu_c)
+    return np.trace((sigma_w @ np.linalg.pinv(sigma_b)) / C)
 
 
 def nc1_weak():
