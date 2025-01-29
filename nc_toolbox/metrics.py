@@ -1,6 +1,6 @@
 import numpy as np
 
-from .util import triu, cov, lin_classify, ncc_classify
+from .util import triu, reduce_func, lin_classify, ncc_classify
 from .statistic import between_class_covariance, within_class_covariance
 
 
@@ -30,7 +30,7 @@ def nc1_weak(H, L, mu_c, mu_g):
     return nomalized_between_class_var, nomalized_within_class_var
 
 
-def nc1_cdnv(mu_c, var_c):
+def nc1_cdnv(mu_c, var_c, reduction='mean'):
     """
     Class-Distance Normalized Variance (CDNV) / Within-Class Variability Collapse
     Tomer Galanti, András György, and Marcus Hutter. On the role of neural collapse in transfer learning, 2022
@@ -41,10 +41,10 @@ def nc1_cdnv(mu_c, var_c):
     num = var_c[idx0] + var_c[idx1]
     den = 2 * np.square(mu_c[idx0] - mu_c[idx1]).sum(axis=1)
     cdnv = num / den
-    return cov(cdnv)
+    return reduce_func(cdnv, reduction)
 
 
-def nc2_equinormness(mu_c, mu_g):
+def nc2_equinormness(mu_c, mu_g, reduction='mean'):
     """
     Coefficient of variation for log distances of mean class embeddings to global mean of embeddings.
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.5
@@ -55,10 +55,10 @@ def nc2_equinormness(mu_c, mu_g):
     mu_centered = mu_c - mu_g
     log_dist = np.log(np.linalg.norm(mu_centered, axis=1))  # (C,)
     diff = log_dist[idx0] - log_dist[idx1]
-    return cov(diff)
+    return reduce_func(diff, reduction)
 
 
-def nc2_equiangularity(mu_c, mu_g):
+def nc2_equiangularity(mu_c, mu_g, reduction='mean'):
     """
     Coefficient of variation for cosine similarity between class means minus expected value.
     Also called interference.
@@ -70,10 +70,10 @@ def nc2_equiangularity(mu_c, mu_g):
     mu_centered = mu_c - mu_g  # (C, D)
     mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
     cossim = triu(mu_centered_norm @ mu_centered_norm.T, k=1)
-    return cov(cossim - expected_angle)
+    return reduce_func(cossim - expected_angle, reduction)
 
 
-def gnc2_hypershperical_uniformity(mu_c, mu_g):
+def gnc2_hypershperical_uniformity(mu_c, mu_g, reduction='mean'):
     """
     Relaxation from the ETF structure, measures generalized neural collapse as pair-wise interactions under a logarithmic inverse distance kernel.
     Jianfeng Lu and Stefan Steinerberger. Neural collapse with cross-entropy loss, 2021
@@ -87,7 +87,7 @@ def gnc2_hypershperical_uniformity(mu_c, mu_g):
     diff = mu_centered_norm[idx0] - mu_centered_norm[idx1]
     dist = np.linalg.norm(diff, axis=1)  # TODO norm not specified in source!
     log_inv_dist = np.log(np.reciprocal(dist))
-    return cov(log_inv_dist)
+    return reduce_func(log_inv_dist, reduction)
 
 
 def nc3_self_duality(W, mu_c, mu_g):
@@ -102,7 +102,7 @@ def nc3_self_duality(W, mu_c, mu_g):
     return np.linalg.norm(W_norm - mu_centered_norm)
 
 
-def unc3_uniform_duality(W, mu_c, mu_g):
+def unc3_uniform_duality(W, mu_c, mu_g, reduction='mean'):
     """
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.6
     """
@@ -110,7 +110,7 @@ def unc3_uniform_duality(W, mu_c, mu_g):
     mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
     W_norm = W / np.linalg.norm(W, axis=1)[:, None]  # (C, D)
     cossim = triu(W_norm @ mu_centered_norm.T, k=1)
-    return cov(cossim)
+    return reduce_func(cossim, reduction)
 
 
 def nc4_classifier_agreement(H, W, b, mu_c):

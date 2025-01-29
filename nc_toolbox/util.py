@@ -20,6 +20,15 @@ def cov(x):
     return x.std() / x.mean()
 
 
+def reduce_func(a, reduction):
+    if reduction == 'mean':
+        return a.mean()
+    elif reduction == 'cov':
+        return cov(a)
+    else:
+        raise NotImplementedError(f'Reduction method {reduction} is not implemented')
+
+
 def lin_classify(H, W, b):
     """
     Linear classifier
