@@ -17,6 +17,14 @@ def svd_flip(v):
     return v
 
 
+def project(P, X, X_mean=None):
+    """Project features X onto subspace defined by projection matrix P."""
+    if X_mean is None:
+        return P_dask.dot(X.T).T
+    else:
+        return P_dask.dot((X - X_mean).T).T
+
+
 def principal_decomp(X, n_components=None, center=False):
     """Principle component decomposition with Dask.
 
@@ -56,7 +64,7 @@ if __name__ == '__main__':
     d = 10
     X = np.random.rand(10000, 512)
     P_dask, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
-    X_dask = P_dask.dot((X - X_mean).T).T
+    X_dask = project(P_dask, X, X_mean)
 
     print(f'==>> X.shape:          {X.shape}')
     print(f'==>> P_dask.shape:     {P_dask.shape}')
