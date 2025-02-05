@@ -1,5 +1,6 @@
-import nc_toolbox as nctb
 import numpy as np
+
+import nc_toolbox as nctb
 
 # Setup
 N = 1000
@@ -24,7 +25,9 @@ print(f'nc1_cdnv: {nctb.nc1_cdnv(mu_c, var_c)}')
 
 print(f'nc2_equinormness: {nctb.nc2_equinormness(mu_c, mu_g)}')
 print(f'nc2_equiangularity: {nctb.nc2_equiangularity(mu_c, mu_g)}')
-print(f'gnc2_hypershperical_uniformity: {nctb.gnc2_hypershperical_uniformity(mu_c, mu_g)}')
+print(
+    f'gnc2_hypershperical_uniformity: {nctb.gnc2_hypershperical_uniformity(mu_c, mu_g)}'
+)
 
 print(f'nc3_self_duality: {nctb.nc3_self_duality(W, mu_c, mu_g)}')
 print(f'unc3_uniform_duality: {nctb.unc3_uniform_duality(W, mu_c, mu_g)}')

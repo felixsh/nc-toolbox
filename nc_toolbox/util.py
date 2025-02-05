@@ -60,9 +60,9 @@ def testrun_classifiers():
     b = np.random.rand(c)
     mu_c = np.random.rand(c, d)
     lin_res = lin_classify(H, W, b)
-    print(f"==>> lin_res.shape: {lin_res.shape}")
+    print(f'==>> lin_res.shape: {lin_res.shape}')
     ncc_res = ncc_classify(H, mu_c)
-    print(f"==>> ncc_res.shape: {ncc_res.shape}")
+    print(f'==>> ncc_res.shape: {ncc_res.shape}')
 
 
 if __name__ == '__main__':

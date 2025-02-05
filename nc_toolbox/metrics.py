@@ -1,7 +1,7 @@
 import numpy as np
 
-from .util import triu, reduce_func, lin_classify, ncc_classify
 from .statistic import between_class_covariance, within_class_covariance
+from .util import lin_classify, ncc_classify, reduce_func, triu
 
 
 def nc1_strong(H, L, mu_c, mu_g):
@@ -68,7 +68,7 @@ def nc2_equiangularity(mu_c, mu_g, reduction='mean'):
     C = mu_c.shape[0]
     expected_angle = -1 / (C - 1)
     mu_centered = mu_c - mu_g  # (C, D)
-    mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
+    mu_centered_norm = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
     cossim = triu(mu_centered_norm @ mu_centered_norm.T, k=1)
     return reduce_func(cossim - expected_angle, reduction)
 
@@ -82,7 +82,7 @@ def gnc2_hypershperical_uniformity(mu_c, mu_g, reduction='mean'):
     """
     C = mu_c.shape[0]
     mu_centered = mu_c - mu_g  # (C, D)
-    mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
+    mu_centered_norm = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
     idx0, idx1 = np.triu_indices(C, k=1)
     diff = mu_centered_norm[idx0] - mu_centered_norm[idx1]
     dist = np.linalg.norm(diff, axis=1)  # TODO norm not specified in source!
@@ -97,8 +97,8 @@ def nc3_self_duality(W, mu_c, mu_g):
     Collapse minimizes this metric, goes to zero.
     """
     mu_centered = mu_c - mu_g  # (C, D)
-    mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered)
-    W_norm  = W / np.linalg.norm(W)  # (C, D)
+    mu_centered_norm = mu_centered / np.linalg.norm(mu_centered)
+    W_norm = W / np.linalg.norm(W)  # (C, D)
     return np.linalg.norm(W_norm - mu_centered_norm)
 
 
@@ -107,7 +107,7 @@ def unc3_uniform_duality(W, mu_c, mu_g, reduction='mean'):
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.6
     """
     mu_centered = mu_c - mu_g  # (C, D)
-    mu_centered_norm  = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
+    mu_centered_norm = mu_centered / np.linalg.norm(mu_centered, axis=1)[:, None]
     W_norm = W / np.linalg.norm(W, axis=1)[:, None]  # (C, D)
     cossim = triu(W_norm @ mu_centered_norm.T, k=1)
     return reduce_func(cossim, reduction)

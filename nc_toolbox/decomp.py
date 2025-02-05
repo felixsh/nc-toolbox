@@ -28,7 +28,7 @@ def principal_decomp(X, n_components=None, center=False):
     if center:
         column_mean = np.mean(X, axis=0)
         X = X - column_mean
-    
+
     X_dask = da.from_array(X, chunks=(10_000, n_features))
     _, _, Vt = da.linalg.svd(X_dask, coerce_signs=True)
     components = Vt.compute()
@@ -37,11 +37,13 @@ def principal_decomp(X, n_components=None, center=False):
     if n_components is None:
         n_components = min(n_samples, n_features) - 1
     elif not 0 <= n_components <= min(n_samples, n_features):
-        raise ValueError(f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]')
+        raise ValueError(
+            f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]'
+        )
 
     P = components[:n_components, :]
     P_residual = components[n_components:, :]
-    
+
     if center:
         return P, P_residual, column_mean
     else:
@@ -55,10 +57,10 @@ if __name__ == '__main__':
     X = np.random.rand(10000, 512)
     P_dask, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
     X_dask = P_dask.dot((X - X_mean).T).T
-    
-    print(f"==>> X.shape:          {X.shape}")
-    print(f"==>> P_dask.shape:     {P_dask.shape}")
-    print(f"==>> P_residual.shape: {P_residual.shape}")
+
+    print(f'==>> X.shape:          {X.shape}')
+    print(f'==>> P_dask.shape:     {P_dask.shape}')
+    print(f'==>> P_residual.shape: {P_residual.shape}')
     print()
 
     pca = PCA(n_components=d)
@@ -70,9 +72,9 @@ if __name__ == '__main__':
     P_np = Vh[:d, :]
     X_np = P_np.dot((X - X_mean).T).T
 
-    print(f"==>> P_dask.shape:     {P_dask.shape}")
-    print(f"==>> P_pca.shape:      {P_pca.shape}")
-    print(f"==>> P_np.shape:       {P_np.shape}")
+    print(f'==>> P_dask.shape:     {P_dask.shape}')
+    print(f'==>> P_pca.shape:      {P_pca.shape}')
+    print(f'==>> P_np.shape:       {P_np.shape}')
     print(np.allclose(P_pca, P_dask))
     print(np.allclose(P_pca, P_np))
     print(np.allclose(P_np, P_dask))
@@ -81,9 +83,9 @@ if __name__ == '__main__':
     print(np.allclose(P_np.dot(P_residual.T), 0))
     print()
 
-    print(f"==>> X_pca.shape:  {X_pca.shape}")
-    print(f"==>> X_dask.shape: {X_dask.shape}")
-    print(f"==>> X_np.shape:   {X_np.shape}")
+    print(f'==>> X_pca.shape:  {X_pca.shape}')
+    print(f'==>> X_dask.shape: {X_dask.shape}')
+    print(f'==>> X_np.shape:   {X_np.shape}')
     print(np.allclose(X_pca, X_dask))
     print(np.allclose(X_pca, X_np))
     print(np.allclose(X_np, X_dask))
