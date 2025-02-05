@@ -12,6 +12,7 @@ from .metrics import (
     nc4_classifier_agreement,
     unc3_uniform_duality,
 )
+from .regression import nrc1_feature_collapse, nrc2_self_duality
 from .statistic import (
     between_class_covariance,
     center_embeddings,
@@ -43,4 +44,6 @@ __all__ = [
     'within_class_covariance',
     'lin_classify',
     'ncc_classify',
+    'nrc1_feature_collapse',
+    'nrc2_self_duality',
 ]
