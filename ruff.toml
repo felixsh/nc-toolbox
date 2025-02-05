@@ -1,0 +1,5 @@
+target-version = "py312"
+
+[format]
+# Prefer single quotes over double quotes.
+quote-style = "single"
