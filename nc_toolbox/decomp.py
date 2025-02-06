@@ -20,9 +20,9 @@ def svd_flip(v):
 def project(P, X, X_mean=None):
     """Project features X onto subspace defined by projection matrix P."""
     if X_mean is None:
-        return P_dask.dot(X.T).T
+        return P.dot(X.T).T
     else:
-        return P_dask.dot((X - X_mean).T).T
+        return P.dot((X - X_mean).T).T
 
 
 def principal_decomp(X, n_components=None, center=False):
