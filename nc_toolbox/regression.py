@@ -22,6 +22,11 @@ def _project(C, H):
     return (P @ H.T).T
 
 
+def sigma(Y):
+    Y_center = Y - Y.mean(axis=0)
+    return Y_center.T @ Y_center
+
+
 def nrc1_collapse(H, dim_out):
     """Indicate feature-vector collapse.
     The d-dim feature vectors collapse to a much lower n-dim subspace spanned
@@ -77,11 +82,6 @@ def nrc3_structure(W, Sigma, dim_out, gamma=None):
         return [float(f(np.array([g]))) for g in gamma]
 
     raise ValueError(f'type(gamma): {type(gamma)} is not supported')
-
-
-def sigma(Y):
-    Y_center = Y - Y.mean(axis=0)
-    return Y_center.T @ Y_center
 
 
 if __name__ == '__main__':
