@@ -23,8 +23,9 @@ def _project(C, H):
 
 
 def sigma(Y):
+    M = Y.shape[1]
     Y_center = Y - Y.mean(axis=0)
-    return Y_center.T @ Y_center
+    return (Y_center.T @ Y_center) / M
 
 
 def nrc1_collapse(H, dim_out):
