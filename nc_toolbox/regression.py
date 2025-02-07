@@ -6,8 +6,9 @@ Notation is taken from the paper.
 from collections.abc import Iterable
 
 import numpy as np
-from decomp import principal_decomp
 from scipy.optimize import minimize
+
+from .decomp import principal_decomp
 
 
 def _norm(X):
