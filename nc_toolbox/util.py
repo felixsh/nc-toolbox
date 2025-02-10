@@ -1,7 +1,8 @@
 import numpy as np
+from numpy.typing import NDArray
 
 
-def triu(A, k=0):
+def triu(A: NDArray, k: int = 0) -> NDArray:
     """
     Return upper triangle of square matrix as flat vector
     A: square matrix
@@ -11,7 +12,7 @@ def triu(A, k=0):
     return A[np.triu_indices_from(A, k=k)].flatten()
 
 
-def cov(x):
+def cov(x: NDArray) -> np.float64:
     """
     Coefficient Of Variation (COV)
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024
@@ -20,7 +21,7 @@ def cov(x):
     return x.std() / x.mean()
 
 
-def reduce_func(a, reduction):
+def reduce_func(a: NDArray, reduction: str) -> np.float64:
     if reduction == 'mean':
         return a.mean()
     elif reduction == 'cov':
@@ -29,14 +30,14 @@ def reduce_func(a, reduction):
         raise NotImplementedError(f'Reduction method {reduction} is not implemented')
 
 
-def lin_classify(H, W, b):
+def lin_classify(H: NDArray, W: NDArray, b: NDArray) -> NDArray:
     """
     Linear classifier
     """
     return np.argmax((H @ W.T) + b, axis=1)
 
 
-def _ncc_classify(h, mu_c):
+def _ncc_classify(h: NDArray, mu_c: NDArray) -> NDArray:
     """
     h: feature vector (D,)
     """
@@ -44,7 +45,7 @@ def _ncc_classify(h, mu_c):
     return np.argmin(dist)
 
 
-def ncc_classify(H, mu_c):
+def ncc_classify(H: NDArray, mu_c: NDArray) -> NDArray:
     """
     Nearest Class Center (NCC) classifier
     """

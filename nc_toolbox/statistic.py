@@ -1,9 +1,10 @@
 from collections import OrderedDict
 
 import numpy as np
+from numpy.typing import NDArray
 
 
-def class_embedding_means(H, L):
+def class_embedding_means(H: NDArray, L: NDArray) -> NDArray:
     """Calculate means of embeddings for every class."""
     unique_c = np.unique(L)
     C = len(unique_c)
@@ -15,7 +16,7 @@ def class_embedding_means(H, L):
     return mu_c
 
 
-def class_embedding_variances(H, L, mu_c):
+def class_embedding_variances(H: NDArray, L: NDArray, mu_c: NDArray) -> NDArray:
     """
     Calculate variances of embeddings squared norm for every class.
     Robert Wu and Vardan Papyan. Linguistic Collapse: Neural Collapse in (Large) Language Models, 2024, §3.2
@@ -31,13 +32,13 @@ def class_embedding_variances(H, L, mu_c):
     return var_c
 
 
-def global_embedding_mean(H):
+def global_embedding_mean(H: NDArray) -> NDArray:
     """Calculate mean of embeddings globally."""
     mu_g = H.mean(axis=0)
     return mu_g
 
 
-def split_embeddings(H, L):
+def split_embeddings(H: NDArray, L: NDArray) -> OrderedDict:
     """Split class embeddings into arrays per class."""
     class_labels = np.sort(np.unique(L))
     H_splitted = OrderedDict()
@@ -47,7 +48,7 @@ def split_embeddings(H, L):
     return H_splitted
 
 
-def center_embeddings(H, L, mu_c):
+def center_embeddings(H: NDArray, L: NDArray, mu_c: NDArray) -> NDArray:
     """Center embeddings on their respective class mean."""
     class_labels = np.unique(L)
     H_centered = np.empty_like(H)
@@ -57,7 +58,7 @@ def center_embeddings(H, L, mu_c):
     return H_centered
 
 
-def between_class_covariance(mu_c, mu_g):
+def between_class_covariance(mu_c: NDArray, mu_g: NDArray) -> NDArray:
     """
     Calculate between class covariance.
     Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training, 2020, §I
@@ -68,7 +69,7 @@ def between_class_covariance(mu_c, mu_g):
     return sigma_b
 
 
-def within_class_covariance(H, L, mu_c):
+def within_class_covariance(H: NDArray, L: NDArray, mu_c: NDArray) -> NDArray:
     """
     Calculate within class covariance.
     Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training, 2020, §I

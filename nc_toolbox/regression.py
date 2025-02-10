@@ -4,31 +4,33 @@ Notation is taken from the paper.
 """
 
 from collections.abc import Iterable
+from typing import Optional
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy.optimize import minimize
 
 from .decomp import principal_decomp
 
 
-def _norm(X):
+def _norm(X: NDArray) -> NDArray:
     """Norm rows of matrix X."""
     return X / np.linalg.norm(X, axis=1)[:, np.newaxis]
 
 
-def _project(C, H):
+def _project(C: NDArray, H: NDArray) -> NDArray:
     """Project rows of H onto subspace defined by columns in C."""
     P = C @ np.linalg.pinv(C)
     return (P @ H.T).T
 
 
-def sigma(Y):
+def sigma(Y: NDArray) -> NDArray:
     M = Y.shape[1]
     Y_center = Y - Y.mean(axis=0)
     return (Y_center.T @ Y_center) / M
 
 
-def nrc1_collapse(H, dim_out):
+def nrc1_collapse(H: NDArray, dim_out: int) -> float:
     """Indicate feature-vector collapse.
     The d-dim feature vectors collapse to a much lower n-dim subspace spanned
     by their n principal components.
@@ -41,7 +43,7 @@ def nrc1_collapse(H, dim_out):
     return float(np.square(x).sum() / M)
 
 
-def nrc2_duality(H, W):
+def nrc2_duality(H: NDArray, W: NDArray) -> float:
     """Indicate self-duality.
     The d-dim feature vectors collapse to a much lower n-dim subspace spanned by the rows of W.
     Collapse minimizes this metric, goes to zero."""
@@ -51,7 +53,9 @@ def nrc2_duality(H, W):
     return float(np.square(x).sum() / M)
 
 
-def nrc3_structure(W, Sigma, dim_out, gamma=None):
+def nrc3_structure(
+    W: NDArray, Sigma: NDArray, dim_out: int, gamma: Optional[float | Iterable] = None
+) -> float:
     """Indicate a specific structure of the feature vectors.
     Angles between rows of W are influenced by Sigma. If targets are uncorrelated (Sigma diagonal)
     then NRC3 --> 0 implies W is orthogonal.
@@ -63,7 +67,7 @@ def nrc3_structure(W, Sigma, dim_out, gamma=None):
     L_sigma = np.linalg.cholesky(Sigma)
     In = np.eye(dim_out)
 
-    def f(x):
+    def f(x: NDArray) -> np.float64:
         gamma_sqrt = np.sqrt(x)[0]
         X_norm = L_sigma - gamma_sqrt * In
         X_norm /= np.linalg.norm(X_norm, ord='fro')

@@ -1,9 +1,12 @@
+from typing import Optional
+
 import dask.array as da
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.decomposition import PCA
 
 
-def svd_flip(v):
+def svd_flip(v: NDArray) -> NDArray:
     """Sign correction to ensure deterministic output from SVD.
 
     Adapted from:
@@ -17,7 +20,7 @@ def svd_flip(v):
     return v
 
 
-def project(P, X, X_mean=None):
+def project(P: NDArray, X: NDArray, X_mean: Optional[NDArray] = None) -> NDArray:
     """Project features X onto subspace defined by projection matrix P."""
     if X_mean is None:
         return P.dot(X.T).T
@@ -25,7 +28,9 @@ def project(P, X, X_mean=None):
         return P.dot((X - X_mean).T).T
 
 
-def principal_decomp(X, n_components=None, center=False):
+def principal_decomp(
+    X: NDArray, n_components: Optional[int] = None, center: Optional[bool] = False
+) -> tuple[NDArray]:
     """Principle component decomposition with Dask.
 
     Adapted from sklearn.decompositions.PCA():
