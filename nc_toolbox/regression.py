@@ -4,7 +4,7 @@ Notation is taken from the paper.
 """
 
 from collections.abc import Iterable
-from typing import Optional
+from typing import Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -54,7 +54,7 @@ def nrc2_duality(H: NDArray, W: NDArray) -> float:
 
 
 def nrc3_structure(
-    W: NDArray, Sigma: NDArray, dim_out: int, gamma: Optional[float | Iterable] = None
+    W: NDArray, Sigma: NDArray, dim_out: int, gamma: Union[float, Iterable, None] = None
 ) -> float:
     """Indicate a specific structure of the feature vectors.
     Angles between rows of W are influenced by Sigma. If targets are uncorrelated (Sigma diagonal)
