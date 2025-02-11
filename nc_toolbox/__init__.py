@@ -12,7 +12,7 @@ from .metrics import (
     nc4_classifier_agreement,
     unc3_uniform_duality,
 )
-from .regression import nrc1_collapse, nrc2_duality, nrc3_structure, sigma
+from .regression import nrc1_collapse, nrc2_duality, nrc3_structure
 from .statistic import (
     between_class_covariance,
     center_embeddings,
@@ -47,5 +47,4 @@ __all__ = [
     'nrc1_collapse',
     'nrc2_duality',
     'nrc3_structure',
-    'sigma',
 ]
