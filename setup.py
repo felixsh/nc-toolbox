@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as f:
 
 setuptools.setup(
     name='nc-toolbox',
-    version='0.0.7',
+    version='0.0.8',
     author='Felix Hauser',
     author_email='felix.hauser@kit.edu',
     description='A Python library to calculate Neural Collapse (NC) related metrics.',

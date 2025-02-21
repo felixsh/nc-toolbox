@@ -8,11 +8,10 @@ from typing import Union
 
 import dask.array as da
 import numpy as np
+from decomp import principal_decomp
 from numpy.typing import NDArray
 from scipy.optimize import minimize
 from sklearn.utils.extmath import svd_flip
-
-from .decomp import principal_decomp
 
 
 def _rowwise_norm(X: NDArray) -> NDArray:
@@ -26,16 +25,37 @@ def _proj(H: NDArray, C: NDArray) -> NDArray:
     return (P @ H.T).T
 
 
+def _proj_orth(H: NDArray, C: NDArray) -> NDArray:
+    """Project rows of H onto subspace defined by columns in C, C is orthogonal."""
+    P = C @ C.T
+    return (P @ H.T).T
+
+
 def nrc1_collapse(H: NDArray, dim_out: int) -> float:
     """Indicate feature-vector collapse.
     The d-dim feature vectors collapse to a much lower n-dim subspace spanned
     by their n principal components.
     Collapse minimizes this metric, goes to zero."""
-    M = H.shape[0]
     P, _ = principal_decomp(H, n_components=dim_out)
     H_norm = _rowwise_norm(H)
-    x = np.linalg.norm(H_norm - _proj(H_norm, P.T), axis=1)
-    return float(np.square(x).sum() / M)
+    x = np.linalg.norm(H_norm - _proj_orth(H_norm, P.T), axis=1, ord=2)
+    return float(np.square(x).mean())
+
+
+def nrc1_collapse_all(H: NDArray) -> NDArray:
+    """Indicate feature-vector collapse.
+    The d-dim feature vectors collapse to a much lower n-dim subspace spanned
+    by their n principal components.
+    Collapse minimizes this metric, goes to zero."""
+    _, dim_feature = H.shape
+    P, _ = principal_decomp(H, n_components=dim_feature)
+    H_norm = _rowwise_norm(H)
+    res = np.empty((dim_feature,))
+    Id = np.eye(dim_feature)
+    for n in range(1, dim_feature + 1):
+        C = P[:n, :].T @ P[:n, :]
+        res[n - 1] = np.square(np.linalg.norm(H_norm @ (Id - C), axis=1, ord=2)).mean()
+    return res
 
 
 def nrc2_duality(H: NDArray, W: NDArray) -> float:
@@ -107,6 +127,8 @@ if __name__ == '__main__':
     print('nrc2_duality\t', nrc2_duality(H, W))
     print('nrc3_structure\t', nrc3_structure(W, Y, n_classes))
 
+    print('nrc1_collapse_all\t', nrc1_collapse_all(H))
+
     # print('type(nrc1_collapse)\t', type(nrc1_collapse(H, c)))
     # print('type(nrc2_duality)\t', type(nrc2_duality(H, W)))
     # print('type(nrc3_structure)\t', type(nrc3_structure(W, Sigma, c, gamma=0.5)))
@@ -114,8 +136,10 @@ if __name__ == '__main__':
     # Plot NRC3 over gamma
     import matplotlib.pyplot as plt
 
-    gamma = np.linspace(0, 1, 101)
-    nrc3 = nrc3_structure(W, Y, n_classes, gamma)
+    # gamma = np.linspace(0, 1, 101)
+    # nrc3 = nrc3_structure(W, Y, n_classes, gamma)
+    # plt.plot(gamma, nrc3)
+    # plt.show()
 
-    plt.plot(gamma, nrc3)
+    plt.plot(nrc1_collapse_all(H))
     plt.show()
