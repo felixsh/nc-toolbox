@@ -8,7 +8,7 @@ from typing import Union
 
 import dask.array as da
 import numpy as np
-from decomp import principal_decomp
+from .decomp import principal_decomp
 from numpy.typing import NDArray
 from scipy.optimize import minimize
 from sklearn.utils.extmath import svd_flip
