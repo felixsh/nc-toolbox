@@ -10,9 +10,9 @@ def class_embedding_means(H: NDArray, L: NDArray) -> NDArray:
     C = len(unique_c)
     D = H.shape[1]
     mu_c = np.empty((C, D))
-    for c in unique_c:
+    for i, c in enumerate(unique_c):
         idx = L == c
-        mu_c[c, :] = H[idx, :].mean(axis=0)
+        mu_c[i, :] = H[idx, :].mean(axis=0)
     return mu_c
 
 
@@ -24,11 +24,11 @@ def class_embedding_variances(H: NDArray, L: NDArray, mu_c: NDArray) -> NDArray:
     unique_c = np.unique(L)
     C = len(unique_c)
     var_c = np.empty((C,))
-    for c in unique_c:
+    for i, c in enumerate(unique_c):
         idx = L == c
         square_dist = np.square(H[idx, :] - mu_c[c, :]).sum(axis=1)
         Nc = square_dist.shape[0]
-        var_c[c] = square_dist.sum(axis=0) / (Nc - 1)
+        var_c[i] = square_dist.sum(axis=0) / (Nc - 1)
     return var_c
 
 
@@ -38,10 +38,10 @@ def global_embedding_mean(H: NDArray) -> NDArray:
     return mu_g
 
 
-def split_embeddings(H: NDArray, L: NDArray) -> OrderedDict:
+def split_embeddings(H: NDArray, L: NDArray) -> dict:
     """Split class embeddings into arrays per class."""
-    class_labels = np.sort(np.unique(L))
-    H_splitted = OrderedDict()
+    class_labels = np.unique(L)
+    H_splitted = {}
     for c in class_labels:
         idx = L == c
         H_splitted[c] = H[idx, :]
