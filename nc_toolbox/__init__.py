@@ -19,6 +19,7 @@ from .statistic import (
     class_embedding_means,
     class_embedding_variances,
     global_embedding_mean,
+    global_embedding_variance,
     split_embeddings,
     within_class_covariance,
 )
