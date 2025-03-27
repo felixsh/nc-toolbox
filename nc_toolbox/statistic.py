@@ -38,6 +38,14 @@ def global_embedding_mean(H: NDArray) -> NDArray:
     return mu_g
 
 
+def global_embedding_variance(H: NDArray, mu_g: NDArray) -> float:
+    """Calculate variance of embeddings globally."""
+    square_dist = np.square(H - mu_g).sum(axis=1)
+    N = square_dist.shape[0]
+    var_g = square_dist.sum(axis=0) / (N - 1)
+    return float(var_g)
+
+
 def split_embeddings(H: NDArray, L: NDArray) -> dict:
     """Split class embeddings into arrays per class."""
     class_labels = np.unique(L)
