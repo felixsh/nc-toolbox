@@ -23,7 +23,7 @@ from .statistic import (
     split_embeddings,
     within_class_covariance,
 )
-from .util import lin_classify, ncc_classify
+from .util import lin_classify, ncc_classify, triu
 
 __all__ = [
     'principal_decomp',
@@ -45,6 +45,7 @@ __all__ = [
     'within_class_covariance',
     'lin_classify',
     'ncc_classify',
+    'triu',
     'nrc1_collapse',
     'nrc1_collapse_all',
     'nrc2_duality',
