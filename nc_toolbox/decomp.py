@@ -48,10 +48,11 @@ def principal_decomp(
     """
     n_samples, n_features = X.shape
 
-    if not 0 <= n_components <= min(n_samples, n_features) and n_components is not None:
-        raise ValueError(
-            f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]'
-        )
+    if n_components is not None:
+        if not 0 <= n_components <= min(n_samples, n_features):
+            raise ValueError(
+                f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]'
+            )
 
     if center:
         column_mean = np.mean(X, axis=0)
@@ -116,5 +117,5 @@ if __name__ == '__main__':
     print(np.allclose(X_np, X_dask))
 
     P_dask, P_residual = principal_decomp(X)
-    print(f'==>> P_dask.shape: {P_dask.shape}')
-    print(f'==>> P_residual.shape: {P_residual.shape}')
+    print(P_dask.shape[0] == P_dask.shape[1])
+    print(P_residual is None)
