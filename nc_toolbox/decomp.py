@@ -3,7 +3,6 @@ from typing import Optional
 import dask.array as da
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.decomposition import PCA
 
 
 def svd_flip(v: NDArray) -> NDArray:
@@ -78,6 +77,7 @@ def principal_decomp(
 
 if __name__ == '__main__':
     # Basic testing
+    from sklearn.decomposition import PCA
 
     d = 10
     X = np.random.rand(10000, 512)
