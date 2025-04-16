@@ -1,6 +1,6 @@
 """A package for calculating Neural Collapse and related metrics."""
 
-from .decomp import principal_decomp
+from .decomp import principal_decomp, project, project_keepdim
 from .metrics import (
     gnc2_hypershperical_uniformity,
     nc1_cdnv,
@@ -27,6 +27,8 @@ from .util import lin_classify, ncc_classify, triu
 
 __all__ = [
     'principal_decomp',
+    'project',
+    'project_keepdim',
     'gnc2_hypershperical_uniformity',
     'nc1_cdnv',
     'nc1_strong',
@@ -41,6 +43,7 @@ __all__ = [
     'class_embedding_means',
     'class_embedding_variances',
     'global_embedding_mean',
+    'global_embedding_variance',
     'split_embeddings',
     'within_class_covariance',
     'lin_classify',
