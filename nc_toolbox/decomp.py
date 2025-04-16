@@ -23,9 +23,19 @@ def svd_flip(v: NDArray) -> NDArray:
 def project(P: NDArray, X: NDArray, X_mean: Optional[NDArray] = None) -> NDArray:
     """Project features X onto subspace defined by projection matrix P."""
     if X_mean is None:
-        return P.dot(X.T).T
+        return X @ P.T
     else:
-        return P.dot((X - X_mean).T).T
+        return (X - X_mean) @ P.T
+
+
+def project_keepdim(
+    P: NDArray, X: NDArray, X_mean: Optional[NDArray] = None
+) -> NDArray:
+    """Project features X onto subspace defined by projection matrix PP^T."""
+    if X_mean is None:
+        return X @ P.T @ P
+    else:
+        return (X - X_mean) @ P.T @ P
 
 
 def principal_decomp(
@@ -38,6 +48,11 @@ def principal_decomp(
     """
     n_samples, n_features = X.shape
 
+    if not 0 <= n_components <= min(n_samples, n_features) and n_components is not None:
+        raise ValueError(
+            f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]'
+        )
+
     if center:
         column_mean = np.mean(X, axis=0)
         X = X - column_mean
@@ -47,15 +62,12 @@ def principal_decomp(
     components = Vt.compute()
     components = svd_flip(components)
 
-    if n_components is None:
-        n_components = min(n_samples, n_features) - 1
-    elif not 0 <= n_components <= min(n_samples, n_features):
-        raise ValueError(
-            f'n_components={n_components} is out of bounds, [0, {min(n_samples, n_features)}]'
-        )
-
-    P = components[:n_components, :]
-    P_residual = components[n_components:, :]
+    if n_components is None or n_components == min(n_samples, n_features):
+        P = components
+        P_residual = None
+    else:
+        P = components[:n_components, :]
+        P_residual = components[n_components:, :]
 
     if center:
         return P, P_residual, column_mean
@@ -102,3 +114,7 @@ if __name__ == '__main__':
     print(np.allclose(X_pca, X_dask))
     print(np.allclose(X_pca, X_np))
     print(np.allclose(X_np, X_dask))
+
+    P_dask, P_residual = principal_decomp(X)
+    print(f'==>> P_dask.shape: {P_dask.shape}')
+    print(f'==>> P_residual.shape: {P_residual.shape}')
