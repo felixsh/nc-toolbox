@@ -3,6 +3,7 @@ from typing import Optional
 import dask.array as da
 import numpy as np
 from numpy.typing import NDArray
+from threadpoolctl import threadpool_limits
 
 
 def svd_flip(v: NDArray) -> NDArray:
@@ -57,9 +58,10 @@ def principal_decomp(
         column_mean = np.mean(X, axis=0)
         X = X - column_mean
 
-    X_dask = da.from_array(X, chunks=(10_000, n_features))
-    _, _, Vt = da.linalg.svd(X_dask, coerce_signs=True)
-    components = Vt.compute()
+    with threadpool_limits(limits=32, user_api='blas'):
+        X_dask = X  # da.from_array(X, chunks=(10_000, n_features))
+        _, _, Vt = da.linalg.svd(X_dask, coerce_signs=True)
+        components = Vt.compute()
     components = svd_flip(components)
 
     if n_components is None or n_components == min(n_samples, n_features):
@@ -80,7 +82,13 @@ if __name__ == '__main__':
     from sklearn.decomposition import PCA
 
     d = 10
-    X = np.random.rand(10000, 512)
+    # X = np.random.randn(1281167, 512)
+
+    import dask.array as da
+
+    rng = da.random.default_rng()
+    X = rng.random((1281167, 512), chunks=(10_000, 512))
+
     P_dask, P_residual, X_mean = principal_decomp(X, n_components=d, center=True)
     X_dask = project(P_dask, X, X_mean)
 
@@ -88,6 +96,7 @@ if __name__ == '__main__':
     print(f'==>> P_dask.shape:     {P_dask.shape}')
     print(f'==>> P_residual.shape: {P_residual.shape}')
     print()
+    input()
 
     pca = PCA(n_components=d)
     X_pca = pca.fit_transform(X)
